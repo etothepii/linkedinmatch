@@ -9,7 +9,20 @@ block summary
 
 block content
   div(class='panel panel-default')
-    div.panel-heading
-      | Who we are
-    div.panel-body
-      | Gajusz Chmiel, Miroslav Paskov and James Robinson
+    - if (!user) {
+        div.panel-heading
+          | Who we are
+        div.panel-body
+          | Gajusz Chmiel, Miroslav Paskov and James Robinson
+    - }
+    - else {
+        - var profile = eval("(" + user._raw + ")");
+        div.panel-heading
+          | #{profile.firstName} you are logged in
+        div.panel-body You have the following skills
+        - var skills = profile.skills.values;
+        - for (var index in skills) {
+        ul
+          li  #{skills[index].skill.name)
+        - }
+    - }

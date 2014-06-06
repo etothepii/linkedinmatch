@@ -1,0 +1,283 @@
+"{
+ "distance": 0,
+ "firstName": "James",
+ "formattedName": "James Robinson",
+ "headline": "Software Engineer at Barclays Capital",
+ "id": "ZsDoF7_1NT",
+ "industry": "Financial Services",
+ "interests": "Law, Politics and DIY",
+ "lastModifiedTimestamp": 1366704345721,
+ "lastName": "Robinson",
+ "mfeedRssUrl": "http://www.linkedin.com/rss/mefeed?key=SDpw07wzVFGp1pEDDKODFJAz_LLbV1XGM05A3I-Q1tMq_eQYhtn4_Oaw2D7QXFqt",
+ "numConnections": 175,
+ "numConnectionsCapped": false,
+ "numRecommenders": 1,
+ "pictureUrl": "http://m.c.lnkd.licdn.com/mpr/mprx/0_ZPIPybLf4PyiyikaZqWhyXnf4-EfyQLaVA02yXkYFAY0_G-mqvRx-krK9sor0TXGMKdSP_sn-BNo",
+ "publicProfileUrl": "http://www.linkedin.com/pub/james-robinson/55/2a8/679",
+ "skills": {
+ "_total": 35,
+ "values": [
+ {
+ "id": 1,
+ "skill": {"name": "Java"}
+ },
+ {
+ "id": 2,
+ "skill": {"name": "C#"}
+ },
+ {
+ "id": 3,
+ "skill": {"name": "WCF"}
+ },
+ {
+ "id": 4,
+ "skill": {"name": "WPF"}
+ },
+ {
+ "id": 5,
+ "skill": {"name": "Mathematics"}
+ },
+ {
+ "id": 6,
+ "skill": {"name": "LaTeX"}
+ },
+ {
+ "id": 7,
+ "skill": {"name": "XML"}
+ },
+ {
+ "id": 8,
+ "skill": {"name": "Tx"}
+ },
+ {
+ "id": 16,
+ "skill": {"name": "Derivatives"}
+ },
+ {
+ "id": 17,
+ "skill": {"name": "Bloomberg Data License"}
+ },
+ {
+ "id": 18,
+ "skill": {"name": "Bloomberg Terminal"}
+ },
+ {
+ "id": 19,
+ "skill": {"name": "Equities"}
+ },
+ {
+ "id": 26,
+ "skill": {"name": "Quantitative Finance"}
+ },
+ {
+ "id": 27,
+ "skill": {"name": "Python"}
+ },
+ {
+ "id": 28,
+ "skill": {"name": "Agile Methodologies"}
+ },
+ {
+ "id": 29,
+ "skill": {"name": "C++"}
+ },
+ {
+ "id": 30,
+ "skill": {"name": "SQL"}
+ },
+ {
+ "id": 31,
+ "skill": {"name": "Machine Learning"}
+ },
+ {
+ "id": 32,
+ "skill": {"name": "VBA"}
+ },
+ {
+ "id": 33,
+ "skill": {"name": ".NET"}
+ },
+ {
+ "id": 34,
+ "skill": {"name": "Programming"}
+ },
+ {
+ "id": 35,
+ "skill": {"name": "Microsoft SQL Server"}
+ },
+ {
+ "id": 36,
+ "skill": {"name": "Trading"}
+ },
+ {
+ "id": 37,
+ "skill": {"name": "Software Development"}
+ },
+ {
+ "id": 38,
+ "skill": {"name": "Trading Systems"}
+ },
+ {
+ "id": 39,
+ "skill": {"name": "Equity Derivatives"}
+ },
+ {
+ "id": 42,
+ "skill": {"name": "Testing"}
+ },
+ {
+ "id": 43,
+ "skill": {"name": "Credit Derivatives"}
+ },
+ {
+ "id": 44,
+ "skill": {"name": "Test Driven Development"}
+ },
+ {
+ "id": 45,
+ "skill": {"name": "OOP"}
+ },
+ {
+ "id": 46,
+ "skill": {"name": "Fixed Income"}
+ },
+ {
+ "id": 47,
+ "skill": {"name": "Algorithms"}
+ },
+ {
+ "id": 48,
+ "skill": {"name": "Multithreading"}
+ },
+ {
+ "id": 49,
+ "skill": {"name": "Object Oriented Design"}
+ },
+ {
+ "id": 50,
+ "skill": {"name": "Design Patterns"}
+ }
+ ]
+ },
+ "suggestions": {"toFollow": {
+ "companies": {
+ "_count": 10,
+ "_start": 0,
+ "values": [
+ {
+ "id": 234080,
+ "name": "DSR Corporation"
+ },
+ {
+ "id": 1979462,
+ "name": "Cambridge Communication Systems Ltd"
+ },
+ {
+ "id": 873200,
+ "name": "Tsuru Capital LLC"
+ },
+ {
+ "id": 8840,
+ "name": "MERA"
+ },
+ {
+ "id": 995758,
+ "name": "Artoo"
+ },
+ {
+ "id": 1323766,
+ "name": "Museum of Mathematics"
+ },
+ {
+ "id": 21271,
+ "name": "Quinity"
+ },
+ {
+ "id": 32526,
+ "name": "The Product Engine"
+ },
+ {
+ "id": 221936,
+ "name": "StackFrame, LLC"
+ },
+ {
+ "id": 866788,
+ "name": "BTI360"
+ }
+ ]
+ },
+ "industries": {"_total": 0},
+ "newsSources": {"_total": 0},
+ "people": {"_total": 0}
+ }},
+ "summary": "Ever since first being introduced to the Java language in 1995 at age 8 by my father I have been completely addicted to computers and how to leverage them in any way that I can. Having been brought up in a house filled with computers and mathematical puzzles I have developed a great love of solving mathematical problems of all kinds, whether leveraging computers or not. This passion allowed me to spot, and capitalise upon, the vast inefficiencies that existed in the various betting markets which I became interested in whilst at University and profited from during the first couple of years of my career.\
+\
+Since joining Barclays I have worked on a variety of projects within Barclays Asset Management. These projects have allowed me to substantially develop my natural aptitude for finance, mathematics and computing in a formal and collaborative format. Ultimately leading to my being selected to work on my current project, the highly sophisticated and powerful Archimedes back tester from its inception.",
+ "threeCurrentPositions": {
+ "_total": 1,
+ "values": [{
+ "company": {
+ "id": 1421,
+ "industry": "Financial Services",
+ "name": "Barclays Capital",
+ "size": "10,001+ employees",
+ "ticker": "BARC",
+ "type": "Public Company"
+ },
+ "id": 301194092,
+ "isCurrent": true,
+ "startDate": {
+ "month": 11,
+ "year": 2011
+ },
+ "summary": "Working in front-office technology at Funds & Advisory (the Asset Managemet Business of Barclays Capital with several $bn of assets under management). Part of a focused team building a highly sophisticated back testing engine to calculate the performance, and other metrics, of a portfolio strategy defined from a terse script. This project involves working closely with the Front-office to build a system capable of successfully handling all the complex issues that arise as part of a highly accurate back test, from the mundane fees and charges to the exotic payments made to holders of Brazilian equities.\
+\
+Previously I worked on the HyperCube (a Winner of the Banking Technology Awards 2012) and a variety of other C# projects developing a knowledge of WCF, WPF and the other technologies required to transform myself from a Java/*NIX developer to working in a Windows Front-to-back environment,",
+ "title": "Software Engineer"
+ }]
+ },
+ "threePastPositions": {
+ "_total": 2,
+ "values": [
+ {
+ "company": {
+ "industry": "Financial Services",
+ "name": "Etothepii Ltd"
+ },
+ "endDate": {
+ "month": 11,
+ "year": 2011
+ },
+ "id": 301196104,
+ "isCurrent": false,
+ "startDate": {
+ "month": 7,
+ "year": 2010
+ },
+ "summary": "Upon graduating from Cambridge having developed my own trading platform for profiting from Horse Racing arbitrage I moved to doing this full time. As taking money from bookmakers is, in reality, easier than taking candy from a baby, the main focus was in ensuring that I was first to the party on each occasion. On one particularly spectacular weekend that involved both the Grand National and US Masters I netted over £5,000 and was able to buy a delightful engagement ring for my fiancée.",
+ "title": "Director"
+ },
+ {
+ "company": {
+ "id": 4522,
+ "industry": "Research",
+ "name": "University of Cambridge",
+ "size": "10,001+ employees",
+ "type": "Educational Institution"
+ },
+ "endDate": {
+ "month": 7,
+ "year": 2010
+ },
+ "id": 301196388,
+ "isCurrent": false,
+ "startDate": {
+ "month": 6,
+ "year": 2007
+ },
+ "summary": "Whilst reading for my mathematics degree I began investigating and exploring a variety of potential inefficiencies in betting markets, in particular horse racing and golf betting markets. During this time I developed a first draft of the trading platform which would eventually form the genesis of the software I would use to trade full time.",
+ "title": "Recreational Gambler"
+ }
+ ]
+ }
+}"
