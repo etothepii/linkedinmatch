@@ -1,0 +1,14 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+dependency-reduced-pom.xml
+node_modules/
+password
+
+target/
+
+.DS_STORE

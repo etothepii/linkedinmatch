@@ -1,0 +1,18 @@
+{
+  "author": "The Three Musketeers",
+  "name": "skillpair",
+  "description": "Skill comparison website",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "querystring": "*",
+    "chai": "*",
+    "mocha": "*",
+    "socket.io": "*",
+    "passport": ">= 0.0.0",
+    "util": "*",
+    "passport-linkedin-oauth2": ">= 0.0.0",
+    "express": "3.4.7",
+    "jade": "*"
+  }
+}
