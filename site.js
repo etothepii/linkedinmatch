@@ -3,7 +3,9 @@ var express = require('express')
   , passport = require('passport')
   , LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
   , path = require('path')
+  , Linkedin = require('node-linkedin')('api', 'secret', 'callback')
   , util = require('util');
+
 
 passport.serializeUser(function(user, done) {
   done(null, user);
