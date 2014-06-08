@@ -146,7 +146,7 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-prdb.connect(fs,function() {
+prdb.connect(function() {
   app.listen(process.env.SITE_PORT);
 });
 

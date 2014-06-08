@@ -5,6 +5,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "mysql": "*",
+    "node-mysql": "*",
     "querystring": "*",
     "chai": "*",
     "node-linkedin": "*",
@@ -12,7 +14,7 @@
     "socket.io": "*",
     "passport": ">= 0.0.0",
     "util": "*",
-    "http": "*",
+    "orm": "*",
     "cheerio": "*",
     "passport-linkedin-oauth2": ">= 0.0.0",
     "express": "3.4.7",
