@@ -19,9 +19,9 @@ passport.deserializeUser(function(obj, done) {
 passport.use(
   new LinkedInStrategy(
     {
-      clientID: '77mdaohplf6gnr',
-      clientSecret: 'oz9WvPLOQN4ebokr',
-      callbackURL: "http://localhost:4000/auth/linkedin/callback",
+      clientID: process.env.LINKEDIN_CLIENT_ID,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+      callbackURL: "http://" + process.env.REALM + "/auth/linkedin/callback",
       scope: ['r_network','r_fullprofile']
     }, function(accessToken, refeshToken, user, done) {
       user.accessToken = accessToken
@@ -42,7 +42,7 @@ app.configure(function() {
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.session({ secret: 'kasdljcnalrkhgrtluvaernclaruh' }));
+  app.use(express.session({ secret: process.env.EXPRESS_SECRET }));
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
