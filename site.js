@@ -6,6 +6,7 @@ var express = require('express')
   , http = require("http")
   , cheerio = require("Cheerio")
   , Linkedin = require('node-linkedin')('api', 'secret', 'callback')
+  , prdb = require('./lib/pairreviewDB')
   , util = require('util');
 
 passport.serializeUser(function(user, done) {
@@ -145,7 +146,9 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-app.listen(4000);
+prdb.connect(fs,function() {
+  app.listen(process.env.SITE_PORT);
+});
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
