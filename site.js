@@ -55,19 +55,21 @@ function processConnection(linkedin, connection) {
     return;
   }
   console.log(JSON.stringify(connection));
-  linkedin.people.id(connection.id, ['public-profile-url', 'last-modified-timestamp'], function(err, profile) {
+  linkedin.people.id(connection.id, ['public-profile-url'], function(err, profile) {
     if (err) {
       console.error(err);
       return;
     }
-    processPublicProfile(linkedin, {
+    var publicProfile = {
       id: connection.id,
       firstName: connection.firstName,
       lastName: connection.lastName,
       pictureUrl: connection.pictureUrl,
       publicProfileUrl: profile.publicProfileUrl,
-      lastModifiedTimestamp: profile.lastModifiedTimestamp
-    });
+    }
+    console.log("Connection: " + JSON.stringify(connection));
+    console.log("Profile: " + JSON.stringify(profile));
+    processPublicProfile(linkedin, publicProfile);
   });
 }
 
@@ -97,13 +99,85 @@ function processPublicProfile(linkedin, profile) {
       $("ol.skills>li").each(function (i, e) {
         profile.skills.push($(e).text().trim());
       });
-      updateDatabase(profile);
+      updateDatabase(profile, false);
     });
   }
 }
 
-function updateDatabase(profile) {
+function updateDatabase(profile, playing) {
   console.log("Updating Database: " + JSON.stringify(profile));
+  prdb.User.find({ID: profile.id}, function(err, children) {
+    if (children.length == 0) {
+      return addToDatabase(profile, playing);
+    }
+    else if (children.length > 1) {
+      return console.error("Found more than one value with the same primary key");
+    }
+    updateSkills(profile, children[0].ID)
+  });
+}
+
+function addToDatabase(profile, loggedIn) {
+  console.log("Creating profile: " + JSON.stringify(profile));
+  console.log("profile.lastModifiedTimestamp: " + profile.lastModifiedTimestamp); 
+  var user = {
+    ID: profile.id,
+    FIRST_NAME: profile.firstName,
+    LAST_NAME: profile.lastName,
+    PICTURE_URL: profile.pictureUrl,
+    PLAYED: loggedIn
+  }
+  console.log("Saving user: " + JSON.stringify(user));
+  prdb.User.create(user, function (err, created) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("Created: " + JSON.stringify(created));
+    updateSkills(profile, created.ID);
+  });
+}
+
+function seekSkill(skill, dbProfileId) {
+  prdb.Skill.find({NAME: skill}, function(err, found) {
+    if (found.length == 0) {
+      prdb.Skill.create({NAME: skill}, function(err, created) {
+	  console.log("Created skill: " + JSON.stringify(created));
+        if (err) {
+          return console.error("Unable to save: " + skill);
+        }
+        addSkill(dbProfileId, created.ID);
+      });
+    }
+    else {
+      addSkill(dbProfileId, found[0].ID);
+    }
+  });
+}
+
+function updateSkills(profile, dbProfileId) {
+  console.log("Updating skills: " + JSON.stringify(profile.skills));
+  for (var i = 0; i < profile.skills.length; i++) {
+    seekSkill(profile.skills[i], dbProfileId);
+  }
+}
+
+function addSkill(profileId, skillId) {
+  var skill = {PERSON: profileId, SKILL: skillId};
+  prdb.Skills.find(skill, function (err, found) {
+    if (err) {
+      console.error("Failed to find skill: " + JSON.stringify(skill));
+      return console.error(err);
+    }
+    console.log("Found skill: " + JSON.stringify(found));
+    if (found.length == 0) {
+      prdb.Skills.create(skill, function(err, items) {
+        if (err) {
+          return console.error("Failed to save: " + JSON.stringify(skill));
+        }
+        console.log("Saved: " + JSON.stringify(skill));
+      });
+    }
+  });  
 }
 
 app.get('/', function(req, res) {
@@ -113,7 +187,7 @@ app.get('/', function(req, res) {
     linkedin.connections.retrieve(function(err, connections) {
       for (var i = 0; i < connections.values.length && i < 1; i++) {
         var connection = connections.values[i];
-	console.log("Getting connection: " + i);
+        console.log("Getting connection: " + i);
         processConnection(linkedin, connection);
       }
     });  
