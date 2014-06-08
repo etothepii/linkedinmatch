@@ -10,5 +10,6 @@ node_modules/
 password
 
 target/
+resources/environment/
 
 .DS_STORE

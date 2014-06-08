@@ -1,0 +1,40 @@
+#!/bin/bash
+source ~/.bashrc
+export PAIRREVIEW_DB_USERNAME=$(cat resources/environment/username)
+export PAIRREVIEW_DB_PASSWORD=$(cat resources/environment/password)
+export NODE_ENV=$(cat resources/environment/environment)
+export DATABASE=$(cat resources/environment/database)
+export SITE_PORT=$(cat resources/environment/sitePort)
+export LINKEDIN_CLIENT_SECRET=$(cat resources/environment/linkedinClientSecret)
+export LINKEDIN_CLIENT_ID=$(cat resources/environment/linkedinClientId)
+export REALM=$(cat resources/environment/realm)
+pwd=$(pwd)
+case $1 in
+"START")
+        npm install
+        forever start $pwd/site.js
+	;;
+"SITE")
+        npm install
+        node $pwd/site.js
+	;;
+"SYNC")
+        git fetch
+	if [ "$#" -ne 2 ]
+	then
+	  echo "Usage ./application SYNC git_branch"
+	  exit 1
+	fi
+	git checkout $2
+	git pull
+        ;;
+"CLEAN")
+        cd resources
+        cat createCountOnTables.sql | sed "s/db_name/$DATABASE/" | mysql --user=$PAIRREVIEW_DB_USERNAME --password=$PAIRREVIEW_DB_PASSWORD 
+        cd ..
+	;;
+"STOP")	
+        forever stop $pwd/app.js
+        forever stop $pwd/site.js
+	;;
+esac
