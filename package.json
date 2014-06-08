@@ -12,6 +12,8 @@
     "socket.io": "*",
     "passport": ">= 0.0.0",
     "util": "*",
+    "http": "*",
+    "cheerio": "*",
     "passport-linkedin-oauth2": ">= 0.0.0",
     "express": "3.4.7",
     "jade": "*"

@@ -54,22 +54,55 @@ function processConnection(linkedin, connection) {
     return;
   }
   console.log(JSON.stringify(connection));
-  linkedin.people.id(connection.id, ['public-profile-url'], function(err, profile) {
+  linkedin.people.id(connection.id, ['public-profile-url', 'last-modified-timestamp'], function(err, profile) {
     if (err) {
       console.error(err);
       return;
     }
-    processPublicProfile(linked, {
+    processPublicProfile(linkedin, {
       id: connection.id,
       firstName: connection.firstName,
       lastName: connection.lastName,
       pictureUrl: connection.pictureUrl,
-      publicProfileUrl: profile.publicProfileUrl
+      publicProfileUrl: profile.publicProfileUrl,
+      lastModifiedTimestamp: profile.lastModifiedTimestamp
     });
   });
 }
 
-function processPublicProfile(linked, profile) {
+function download(url, callback) {
+  http.get(url, function(res) {
+    var data = "";
+    res.on('data', function (chunk) {
+      data += chunk;
+    });
+    res.on("end", function() {
+      callback(data);
+    });
+  }).on("error", function() {
+    callback(null);
+  });
+}
+
+function mayHaveBeenUpdated(profile) {
+  return true;
+}
+
+function processPublicProfile(linkedin, profile) {
+  if (mayHaveBeenUpdated(profile)) { 
+    download(profile.publicProfileUrl, function(data) {
+      var $ = cheerio.load(data);
+      profile.skills = [];
+      $("ol.skills>li").each(function (i, e) {
+        profile.skills.push($(e).text().trim());
+      });
+      updateDatabase(profile);
+    });
+  }
+}
+
+function updateDatabase(profile) {
+  console.log("Updating Database: " + JSON.stringify(profile));
 }
 
 app.get('/', function(req, res) {
