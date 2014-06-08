@@ -51,10 +51,10 @@ app.configure(function() {
 });
 
 function processConnection(linkedin, connection) {
+  console.log("Processing: " + connection.id);
   if (connection.id == 'private' || !connection.pictureUrl) {
     return;
   }
-  console.log(JSON.stringify(connection));
   linkedin.people.id(connection.id, ['public-profile-url'], function(err, profile) {
     if (err) {
       console.error(err);
@@ -67,8 +67,6 @@ function processConnection(linkedin, connection) {
       pictureUrl: connection.pictureUrl,
       publicProfileUrl: profile.publicProfileUrl,
     }
-    console.log("Connection: " + JSON.stringify(connection));
-    console.log("Profile: " + JSON.stringify(profile));
     processPublicProfile(linkedin, publicProfile);
   });
 }
@@ -99,13 +97,13 @@ function processPublicProfile(linkedin, profile) {
       $("ol.skills>li").each(function (i, e) {
         profile.skills.push($(e).text().trim());
       });
-      updateDatabase(profile, false);
+      updateProfile(profile, false);
     });
   }
 }
 
-function updateDatabase(profile, playing) {
-  console.log("Updating Database: " + JSON.stringify(profile));
+function updateProfile(profile, playing) {
+  console.log("Updating profile: " + profile.id);
   prdb.User.find({ID: profile.id}, function(err, children) {
     if (children.length == 0) {
       return addToDatabase(profile, playing);
@@ -118,8 +116,7 @@ function updateDatabase(profile, playing) {
 }
 
 function addToDatabase(profile, loggedIn) {
-  console.log("Creating profile: " + JSON.stringify(profile));
-  console.log("profile.lastModifiedTimestamp: " + profile.lastModifiedTimestamp); 
+  console.log("Creating profile: " + profile.id);
   var user = {
     ID: profile.id,
     FIRST_NAME: profile.firstName,
@@ -127,12 +124,12 @@ function addToDatabase(profile, loggedIn) {
     PICTURE_URL: profile.pictureUrl,
     PLAYED: loggedIn
   }
-  console.log("Saving user: " + JSON.stringify(user));
+  console.log("Saving user: " + profile.id);
   prdb.User.create(user, function (err, created) {
     if (err) {
       return console.error(err);
     }
-    console.log("Created: " + JSON.stringify(created));
+    console.log("Created user: " + created.ID);
     updateSkills(profile, created.ID);
   });
 }
@@ -141,7 +138,7 @@ function seekSkill(skill, dbProfileId) {
   prdb.Skill.find({NAME: skill}, function(err, found) {
     if (found.length == 0) {
       prdb.Skill.create({NAME: skill}, function(err, created) {
-	  console.log("Created skill: " + JSON.stringify(created));
+	  console.log("Created skill: " + skill);
         if (err) {
           return console.error("Unable to save: " + skill);
         }
@@ -155,7 +152,6 @@ function seekSkill(skill, dbProfileId) {
 }
 
 function updateSkills(profile, dbProfileId) {
-  console.log("Updating skills: " + JSON.stringify(profile.skills));
   for (var i = 0; i < profile.skills.length; i++) {
     seekSkill(profile.skills[i], dbProfileId);
   }
@@ -168,13 +164,11 @@ function addSkill(profileId, skillId) {
       console.error("Failed to find skill: " + JSON.stringify(skill));
       return console.error(err);
     }
-    console.log("Found skill: " + JSON.stringify(found));
     if (found.length == 0) {
       prdb.Skills.create(skill, function(err, items) {
         if (err) {
           return console.error("Failed to save: " + JSON.stringify(skill));
         }
-        console.log("Saved: " + JSON.stringify(skill));
       });
     }
   });  
@@ -182,18 +176,13 @@ function addSkill(profileId, skillId) {
 
 app.get('/', function(req, res) {
   if (req.user) {
-    console.log("req.user.accessToken: " + req.user.accessToken);
     var linkedin = Linkedin.init(req.user.accessToken);
     linkedin.connections.retrieve(function(err, connections) {
       for (var i = 0; i < connections.values.length && i < 1; i++) {
         var connection = connections.values[i];
-        console.log("Getting connection: " + i);
         processConnection(linkedin, connection);
       }
     });  
-  }
-  else {
-    console.log("req.user: undefined");
   }
   res.render(
     'index', 
