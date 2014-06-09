@@ -15,23 +15,8 @@ html
       nav.navbar-inverse
         div.container
           div.navbar-header
-            a.navbar-brand
-              img(src='images/logo38.png', style='margin: -15px -9px -15px 0px')
+            a.navbar-brand 2ru.it
           div(class='collapse navbar-collapse')
-            ul(class='nav navbar-nav')
-              - for (var i = 0; i < names.length; i++) {
-                - if(title==pages[i]) {
-                - var name=names[i]; 
-                  li.active
-                    a.active(href=pages[i])
-                      =names[i]
-                - }
-                - else {
-                  li
-                    a(href=pages[i])
-                      =names[i]
-                - }    
-              - }
             ul(class='nav navbar-nav navbar-right') 
               - if (!user) {
                 li 
