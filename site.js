@@ -85,24 +85,39 @@ function download(url, callback) {
   });
 }
 
-function mayHaveBeenUpdated(profile) {
-  return true;
+function executeProfileIfMayHaveBeenUpdated(profile, next) {
+  prdb.User.find({ID: profile.id}, function (err, children) {
+    if (err) {
+      console.error("Error finding user");
+      return console.error(err);
+    }
+    if (children.length > 0) {
+      var weekAhead = new Date();
+      weekAhead.setDate(children[0].SKILLS_UPDATED.getDate() + 7);
+      if (weekAhead > new Date()) {
+        console.log("No need to update as updated in the last 7 days: " 
+	        + children[0].ID);
+        return;
+      }
+    }
+    next(profile, children);
+  });
 }
 
 function processPublicProfile(linkedin, profile) {
-  if (mayHaveBeenUpdated(profile)) { 
+  executeProfileIfMayHaveBeenUpdated(profile, function(profile, dbProfiles) { 
     download(profile.publicProfileUrl, function(data) {
       var $ = cheerio.load(data);
       profile.skills = [];
       $("ol.skills>li").each(function (i, e) {
         profile.skills.push($(e).text().trim());
       });
-      updateProfile(profile, false);
+      updateProfile(profile, dbProfiles, false);
     });
-  }
+  });
 }
 
-function updateProfile(profile, playing) {
+function updateProfile(profile, dbProfile, playing) {
   console.log("Updating profile: " + profile.id);
   prdb.User.find({ID: profile.id}, function(err, children) {
     if (children.length == 0) {
@@ -111,6 +126,13 @@ function updateProfile(profile, playing) {
     else if (children.length > 1) {
       return console.error("Found more than one value with the same primary key");
     }
+    children[0].SKILLS_UPDATED = new Date();
+    children[0].save(function (err) {
+      if (err) {
+        console.error("Saving skills update time failed");
+        console.error(err);
+      }
+    });
     updateSkills(profile, children[0].ID)
   });
 }
@@ -122,6 +144,7 @@ function addToDatabase(profile, loggedIn) {
     FIRST_NAME: profile.firstName,
     LAST_NAME: profile.lastName,
     PICTURE_URL: profile.pictureUrl,
+    SKILLS_UPDATED: new Date(),
     PLAYED: loggedIn
   }
   console.log("Saving user: " + profile.id);
@@ -178,7 +201,7 @@ app.get('/', function(req, res) {
   if (req.user) {
     var linkedin = Linkedin.init(req.user.accessToken);
     linkedin.connections.retrieve(function(err, connections) {
-      for (var i = 0; i < connections.values.length && i < 1; i++) {
+      for (var i = 0; i < connections.values.length; i++) {
         var connection = connections.values[i];
         processConnection(linkedin, connection);
       }
