@@ -50,13 +50,30 @@ app.configure(function() {
   app.use(express.static(__dirname + '/public'));
 });
 
-function processConnection(linkedin, connection) {
+function processConnection(linkedin, connectedToId, connection) {
   console.log("Processing: " + connection.id);
   if (connection.id == 'private' || !connection.pictureUrl) {
     return;
   }
+  var connectionJoining = {PERSON: connectedToId, CONNECTION: connection.id};
+  prdb.Connection.find(connectionJoining, function(err, children) {
+    if (err) {
+      console.error("Failed to find connection joining");
+      return console.error(err);
+    }
+    if (children.length == 0) {
+      prdb.Connection.create(connectionJoining, function(err) {
+        if (err) {
+          console.error("Failed to create connection joining");
+          return console.error(err);
+	}
+	console.log("Created connection: " + JSON.stringify(connectionJoining));
+      });
+    }
+  });
   linkedin.people.id(connection.id, ['public-profile-url'], function(err, profile) {
     if (err) {
+      console.error("Failed to find person by id");
       console.error(err);
       return;
     }
@@ -66,8 +83,9 @@ function processConnection(linkedin, connection) {
       lastName: connection.lastName,
       pictureUrl: connection.pictureUrl,
       publicProfileUrl: profile.publicProfileUrl,
+      loggedin: false
     }
-    processPublicProfile(linkedin, publicProfile);
+    processProfile(linkedin, publicProfile);
   });
 }
 
@@ -104,15 +122,18 @@ function executeProfileIfMayHaveBeenUpdated(profile, next) {
   });
 }
 
-function processPublicProfile(linkedin, profile) {
+function processProfile(linkedin, profile) {
   executeProfileIfMayHaveBeenUpdated(profile, function(profile, dbProfiles) { 
+    if (profile.loggedin) {
+      return updateProfile(profile, dbProfiles, profile.loggedin);
+    }
     download(profile.publicProfileUrl, function(data) {
       var $ = cheerio.load(data);
-      profile.skills = [];
+      profile.skills = {values: []};
       $("ol.skills>li").each(function (i, e) {
-        profile.skills.push($(e).text().trim());
+        profile.skills.values.push({name: $(e).text().trim()});
       });
-      updateProfile(profile, dbProfiles, false);
+      updateProfile(profile, dbProfiles, profile.loggedin);
     });
   });
 }
@@ -150,6 +171,7 @@ function addToDatabase(profile, loggedIn) {
   console.log("Saving user: " + profile.id);
   prdb.User.create(user, function (err, created) {
     if (err) {
+      console.error("Failed to create User");
       return console.error(err);
     }
     console.log("Created user: " + created.ID);
@@ -159,6 +181,10 @@ function addToDatabase(profile, loggedIn) {
 
 function seekSkill(skill, dbProfileId) {
   prdb.Skill.find({NAME: skill}, function(err, found) {
+    if (err) {
+      console.error("Unable to find skill, " + skill);
+      return console.error(err);
+    }
     if (found.length == 0) {
       prdb.Skill.create({NAME: skill}, function(err, created) {
 	  console.log("Created skill: " + skill);
@@ -175,8 +201,8 @@ function seekSkill(skill, dbProfileId) {
 }
 
 function updateSkills(profile, dbProfileId) {
-  for (var i = 0; i < profile.skills.length; i++) {
-    seekSkill(profile.skills[i], dbProfileId);
+  for (var i = 0; i < profile.skills.values.length; i++) {
+    seekSkill(profile.skills.values[i].name, dbProfileId);
   }
 }
 
@@ -198,22 +224,51 @@ function addSkill(profileId, skillId) {
 }
 
 app.get('/', function(req, res) {
+  var evaluatedProfile;
   if (req.user) {
     var linkedin = Linkedin.init(req.user.accessToken);
+    evaluatedProfile = eval("(" + req.user._raw + ")"); 
+    evaluatedProfile.loggedin = true;
+    processProfile(linkedin, evaluatedProfile);
     linkedin.connections.retrieve(function(err, connections) {
       for (var i = 0; i < connections.values.length; i++) {
         var connection = connections.values[i];
-        processConnection(linkedin, connection);
+        processConnection(linkedin, evaluatedProfile.id, connection);
       }
     });  
   }
-  res.render(
-    'index', 
-    { 
-      user: req.user,
-        profile: req.profile
+  var data = {
+    user: req.user,
+    profile: evaluatedProfile
+  }
+  if (req.user) {
+    getRandomComparison(data, function(data) {  
+      res.render('index', data);
     });
+  }
+  else {
+    res.render('index', data);
+  }
 });
+
+function getRandomComparison(data, next) {
+  console.log("data.user.id: " + data.user.id);
+  prdb.User.find({ID: data.user.id}, function(err, children) {
+    if (err) {
+      console.error("Unable to find user");
+      console.error(err);
+      return;
+    }
+    console.log("children: " + JSON.stringify(children));
+    //getRandomComparisonWithDBUser(data, next, children);
+  });
+}
+
+function getRandomComparisonWithDBUser(data, next, dbUser) {
+  var connection = dbUser.connections;
+  console.log("connections.length: " + connections.length);
+  next(data);
+}
 
 app.get('/auth/linkedin', 
   passport.authenticate('linkedin', { state: 'some_state' }),
