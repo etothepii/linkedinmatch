@@ -131,7 +131,7 @@ function processProfile(linkedin, profile) {
       var $ = cheerio.load(data);
       profile.skills = {values: []};
       $("ol.skills>li").each(function (i, e) {
-        profile.skills.values.push({name: $(e).text().trim()});
+        profile.skills.values.push({skill: {name: $(e).text().trim()}});
       });
       updateProfile(profile, dbProfiles, profile.loggedin);
     });
@@ -202,7 +202,8 @@ function seekSkill(skill, dbProfileId) {
 
 function updateSkills(profile, dbProfileId) {
   for (var i = 0; i < profile.skills.values.length; i++) {
-    seekSkill(profile.skills.values[i].name, dbProfileId);
+    console.log("Seeking skill: " + JSON.stringify(profile.skills.values[i]));
+    seekSkill(profile.skills.values[i].skill.name, dbProfileId);
   }
 }
 
@@ -260,6 +261,7 @@ function getRandomComparison(data, next) {
       return;
     }
     console.log("children: " + JSON.stringify(children));
+    next(data);
     //getRandomComparisonWithDBUser(data, next, children);
   });
 }
