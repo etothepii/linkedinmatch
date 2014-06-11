@@ -27,3 +27,13 @@ input {
     font-size: 75%;
     margin:5px 0;
 }
+
+.comparison img {
+  width: 200px;
+}
+
+.comparison {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}

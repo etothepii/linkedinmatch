@@ -3,6 +3,7 @@ var express = require('express')
   , passport = require('passport')
   , LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
   , path = require('path')
+  , url = require('url')
   , http = require("http")
   , cheerio = require("Cheerio")
   , Linkedin = require('node-linkedin')('api', 'secret', 'callback')
@@ -227,9 +228,13 @@ function addSkill(profileId, skillId) {
   });  
 }
 
-app.get('/', function(req, res) {
+app.get('/', index);
+app.get('/index', index);
+
+function index(req, res) {
   var evaluatedProfile;
-  if (req.user) {
+  var url_parts = url.parse(req.url, true);
+  if (req.user && !url_parts.query) {
     var linkedin = Linkedin.init(req.user.accessToken);
     evaluatedProfile = eval("(" + req.user._raw + ")"); 
     evaluatedProfile.loggedin = true;
@@ -240,6 +245,9 @@ app.get('/', function(req, res) {
         processConnection(linkedin, evaluatedProfile.id, connection);
       }
     });  
+  }
+  if (url_parts.query) {
+    parseQuery(url_parts.query);
   }
   var data = {
     user: req.user,
@@ -253,7 +261,16 @@ app.get('/', function(req, res) {
   else {
     res.render('index', data);
   }
-});
+}
+
+function parseQuery(query) {
+  prdb.Comparison.create(query, function(err, created) {
+    if (err) {
+      return console.error("Failed to create Comparisson in database");
+    }
+    console.log("Created comparisson: " + created.id);
+  });
+}
 
 app.get('/auth/linkedin', 
   passport.authenticate('linkedin', { state: 'some_state' }),
