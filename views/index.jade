@@ -15,13 +15,25 @@ block content
         div.panel-body
           | Gajusz Chmiel, Miroslav Paskov and James Robinson
     - }
+    - else if (!comparisson) {
+        div.panel-heading Error
+        div.panel-body An error occured getting a comparisson
+    - }
     - else {
-        div.panel-heading
-          | #{profile.firstName} you are logged in
-        div.panel-body You have the following skills
-        - var skills = profile.skills.values;
-        - for (var index in skills) {
-        ul
-          li  #{skills[index].skill.name)
-        - }
+        div.panel-heading Compare skill
+        div.panel-body 
+          table
+            tr
+              td(colspan=3) #{comparisson.skill_name}
+            tr
+              td #{comparisson.left_name}
+              td(rowspan=2) vs
+              td #{comparisson.right_name}
+            tr
+              td 
+                a(href='#{comparisson.returnHref + "1"}')
+                  img(src='#{comparisson.left_url}')
+              td 
+                a(href='#{comparisson.returnHref + "-1"}')
+                  img(src='#{comparisson.right_url}')
     - }

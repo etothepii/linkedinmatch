@@ -7,7 +7,10 @@ var express = require('express')
   , cheerio = require("Cheerio")
   , Linkedin = require('node-linkedin')('api', 'secret', 'callback')
   , prdb = require('./lib/pairreviewDB')
+  , comparison = require('./lib/comparison')
   , util = require('util');
+
+comparison.setDB(prdb);
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -55,7 +58,7 @@ function processConnection(linkedin, connectedToId, connection) {
   if (connection.id == 'private' || !connection.pictureUrl) {
     return;
   }
-  var connectionJoining = {PERSON: connectedToId, CONNECTION: connection.id};
+  var connectionJoining = {person_id: connectedToId, connection_id: connection.id};
   prdb.Connection.find(connectionJoining, function(err, children) {
     if (err) {
       console.error("Failed to find connection joining");
@@ -104,17 +107,17 @@ function download(url, callback) {
 }
 
 function executeProfileIfMayHaveBeenUpdated(profile, next) {
-  prdb.User.find({ID: profile.id}, function (err, children) {
+  prdb.User.find({id: profile.id}, function (err, children) {
     if (err) {
       console.error("Error finding user");
       return console.error(err);
     }
     if (children.length > 0) {
       var weekAhead = new Date();
-      weekAhead.setDate(children[0].SKILLS_UPDATED.getDate() + 7);
+      weekAhead.setDate(children[0].skillsUpdated.getDate() + 7);
       if (weekAhead > new Date()) {
         console.log("No need to update as updated in the last 7 days: " 
-	        + children[0].ID);
+	        + children[0].id);
         return;
       }
     }
@@ -140,33 +143,33 @@ function processProfile(linkedin, profile) {
 
 function updateProfile(profile, dbProfile, playing) {
   console.log("Updating profile: " + profile.id);
-  prdb.User.find({ID: profile.id}, function(err, children) {
+  prdb.User.find({id: profile.id}, function(err, children) {
     if (children.length == 0) {
       return addToDatabase(profile, playing);
     }
     else if (children.length > 1) {
       return console.error("Found more than one value with the same primary key");
     }
-    children[0].SKILLS_UPDATED = new Date();
+    children[0].skillsUpdated = new Date();
     children[0].save(function (err) {
       if (err) {
         console.error("Saving skills update time failed");
         console.error(err);
       }
     });
-    updateSkills(profile, children[0].ID)
+    updateSkills(profile, children[0].id)
   });
 }
 
 function addToDatabase(profile, loggedIn) {
   console.log("Creating profile: " + profile.id);
   var user = {
-    ID: profile.id,
-    FIRST_NAME: profile.firstName,
-    LAST_NAME: profile.lastName,
-    PICTURE_URL: profile.pictureUrl,
-    SKILLS_UPDATED: new Date(),
-    PLAYED: loggedIn
+    id: profile.id,
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    pictureUrl: profile.pictureUrl,
+    skillsUpdated: new Date(),
+    played: loggedIn
   }
   console.log("Saving user: " + profile.id);
   prdb.User.create(user, function (err, created) {
@@ -174,28 +177,28 @@ function addToDatabase(profile, loggedIn) {
       console.error("Failed to create User");
       return console.error(err);
     }
-    console.log("Created user: " + created.ID);
-    updateSkills(profile, created.ID);
+    console.log("Created user: " + created.id);
+    updateSkills(profile, created.id);
   });
 }
 
 function seekSkill(skill, dbProfileId) {
-  prdb.Skill.find({NAME: skill}, function(err, found) {
+  prdb.Skill.find({name: skill}, function(err, found) {
     if (err) {
       console.error("Unable to find skill, " + skill);
       return console.error(err);
     }
     if (found.length == 0) {
-      prdb.Skill.create({NAME: skill}, function(err, created) {
+      prdb.Skill.create({name: skill}, function(err, created) {
 	  console.log("Created skill: " + skill);
         if (err) {
           return console.error("Unable to save: " + skill);
         }
-        addSkill(dbProfileId, created.ID);
+        addSkill(dbProfileId, created.id);
       });
     }
     else {
-      addSkill(dbProfileId, found[0].ID);
+      addSkill(dbProfileId, found[0].id);
     }
   });
 }
@@ -208,7 +211,7 @@ function updateSkills(profile, dbProfileId) {
 }
 
 function addSkill(profileId, skillId) {
-  var skill = {PERSON: profileId, SKILL: skillId};
+  var skill = {person_id: profileId, skill_id: skillId};
   prdb.Skills.find(skill, function (err, found) {
     if (err) {
       console.error("Failed to find skill: " + JSON.stringify(skill));
@@ -243,7 +246,7 @@ app.get('/', function(req, res) {
     profile: evaluatedProfile
   }
   if (req.user) {
-    getRandomComparison(data, function(data) {  
+    comparison.getRandomComparison(data, function(data) {  
       res.render('index', data);
     });
   }
@@ -251,26 +254,6 @@ app.get('/', function(req, res) {
     res.render('index', data);
   }
 });
-
-function getRandomComparison(data, next) {
-  console.log("data.user.id: " + data.user.id);
-  prdb.User.find({ID: data.user.id}, function(err, children) {
-    if (err) {
-      console.error("Unable to find user");
-      console.error(err);
-      return;
-    }
-    console.log("children: " + JSON.stringify(children));
-    next(data);
-    //getRandomComparisonWithDBUser(data, next, children);
-  });
-}
-
-function getRandomComparisonWithDBUser(data, next, dbUser) {
-  var connection = dbUser.connections;
-  console.log("connections.length: " + connections.length);
-  next(data);
-}
 
 app.get('/auth/linkedin', 
   passport.authenticate('linkedin', { state: 'some_state' }),
