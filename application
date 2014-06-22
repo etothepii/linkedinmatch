@@ -29,6 +29,32 @@ case $1 in
 	git checkout $2
 	git pull
         ;;
+"CREATE")
+        ./application CREATE_ENV
+        ./application CREATE_DB
+"CREATE_ENV")
+        read -e -p "Please enter a databse username:" -i "pairreview" line
+        echo $line > resources/environment/username
+        RANDOM_PASS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+        read -e -p  "Please enter a databse password:" -i "$RANDOM_PASS" line
+        echo $line > resources/environment/password
+        read -e -p "Please enter a databse environment:" -i "development" line
+        echo $line > resources/environment/environment
+        read -e -p "Please enter a site port:" -i "4000" line
+        echo $line > resources/environment/sitePort
+        read -e -p "Please enter the linked in client secret:" line
+        echo $line > resources/environment/linkedinClientSecret
+        RANDOM_PASS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+        read -e -p "Please enter a express secret:" -i "$RANDOM_PASS" line
+        echo $line > resources/environment/expressSecret
+        read -e -p "Please enter the linked in client id:" -i "77mdaohplf6gnr" line
+        echo $line > resources/environment/linkedinClientId
+        read -e -p "Please enter the realm:" -i "localhost" line
+        echo $line > resources/environment/realm
+"CREATE_DB")
+        cd resources
+        read -e -p "Please enter the username of the user that will create the database:" -i "$(whoami)" line
+        cat createDatabase.sql | sed "s/db_name/$DATABASE/g" | sed "s/db_user/$PAIRREVIEW_DB_USERNAME/g" | sed "s/db_pass/$PAIRREVIEW_DB_PASSWORD/" | mysql --user=$line --password
 "CLEAN")
         cd resources
         cat createLinkedinTables.sql | sed "s/db_name/$DATABASE/" | mysql --user=$PAIRREVIEW_DB_USERNAME --password=$PAIRREVIEW_DB_PASSWORD 
