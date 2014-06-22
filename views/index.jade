@@ -1,23 +1,18 @@
 
 extends layout
 
-block header
-  h1 #{name}
-
-block summary
-  p PairReview - Pairwise comparison
-
 block content
   div(class='panel panel-default')
     - if (!user) {
-        div.panel-heading
-          | Who we are
-        div.panel-body
-          | Gajusz Chmiel, Miroslav Paskov and James Robinson
+        div.panel-heading Who is better at
+        div.panel-body 
+          | Welcome to whoisbetter.at the skills comparison website. Hit the login link in the top right to get started. 
+          | The website is currently in dev and so likely only to work if you have a linked in connection with
+          | James Robinson, Miroslav Paskov or Gajusz Chmiel.
     - }
     - else if (!comparisson) {
         div.panel-heading Error
-        div.panel-body An error occured getting a comparisson
+        div.panel-body An error occured getting a comparisson &nbsp;
           a(href='/index') Try again?
     - }
     - else {
@@ -39,7 +34,7 @@ block content
                   img(src='#{comparisson.left_url}')
               td     
                 a(role="button" class="btn btn-primary btn-log roughly" 
-        	  href='#{comparisson.returnHref + "0"}') Don't Know
+                  href='#{comparisson.returnHref + "0"}') Don't Know
               td 
                 a(href='#{comparisson.returnHref + "-1"}')
                   img(src='#{comparisson.right_url}')
