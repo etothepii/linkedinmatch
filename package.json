@@ -2,7 +2,7 @@
   "author": "The Three Musketeers",
   "name": "skillpair",
   "description": "Skill comparison website",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "mysql": "*",
