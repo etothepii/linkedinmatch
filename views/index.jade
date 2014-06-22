@@ -21,27 +21,30 @@ block content
           a(href='/index') Try again?
     - }
     - else {
-        div.panel-heading Compare skill
+        div.panel-heading Who is better at
         div.panel-body 
           table.comparison
             tr
               td(colspan=3) 
-                h1 #{comparisson.skill_name}
+                h1 #{comparisson.skill_name}?
             tr
-              td 
+              td(width=300) 
                 h2 #{comparisson.left_name}
-              td(rowspan=2) 
-                h3 vs
-              td 
+              td(width=100)
+              td(width=300) 
                 h2 #{comparisson.right_name}
             tr
               td 
                 a(href='#{comparisson.returnHref + "1"}')
                   img(src='#{comparisson.left_url}')
+              td     
+                a(role="button" class="btn btn-primary btn-log roughly" 
+        	  href='#{comparisson.returnHref + "0"}') Don't Know
               td 
                 a(href='#{comparisson.returnHref + "-1"}')
                   img(src='#{comparisson.right_url}')
             tr
-              td(colspan=3) 
-                a(href='#{comparisson.returnHref + "0"}') Don't Know
+              td(colspan=2) 
+                br
+            tr
     - }
